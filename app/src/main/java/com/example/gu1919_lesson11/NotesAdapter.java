@@ -9,12 +9,23 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHolder> {
-    private ArrayList<Note> notes;
+    private List<Note> notes;
+    private onNoteClickListener onNoteClickListener;
 
-    public NotesAdapter(ArrayList<Note> notes) {
+    public NotesAdapter(List<Note> notes) {
         this.notes = notes;
+    }
+
+    interface onNoteClickListener {
+        void onNoteClick(int position);
+        void onLongClick(int position);
+    }
+
+    public void setOnNoteClickListener(NotesAdapter.onNoteClickListener onNoteClickListener) {
+        this.onNoteClickListener = onNoteClickListener;
     }
 
     @NonNull
@@ -29,8 +40,9 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
         Note note = notes.get(position);
         holder.textViewTitle.setText(note.getTitle());
         holder.textViewDescription.setText(note.getDescription());
-        holder.textViewDayOfWeek.setText(note.getDayOfWeek());
-        int colorId = holder.itemView.getResources().getColor(R.color.white,null);
+        holder.textViewDayOfWeek.setText(Note.getDaysAsString(note.getDayOfWeek()));
+
+        int colorId;
         int priority = note.getPriority();
         switch (priority) {
             case 1:
@@ -39,7 +51,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
             case 2:
                 colorId = holder.itemView.getResources().getColor(R.color.orange,null);
                 break;
-            case 3:
+            default:
                 colorId = holder.itemView.getResources().getColor(R.color.green,null);
                 break;
         }
@@ -63,6 +75,24 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
             textViewTitle = itemView.findViewById(R.id.textViewTitle);
             textViewDescription = itemView.findViewById(R.id.textViewDescription);
             textViewDayOfWeek = itemView.findViewById(R.id.textViewDayOfWeek);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (onNoteClickListener != null){
+                        onNoteClickListener.onNoteClick(getAdapterPosition());
+                    }
+                }
+            });
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    if (onNoteClickListener != null) {
+                        onNoteClickListener.onLongClick(getAdapterPosition());
+                    }
+                    return true;
+                }
+            });
         }
     }
 }

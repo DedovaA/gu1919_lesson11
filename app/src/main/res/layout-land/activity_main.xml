@@ -5,11 +5,10 @@
     android:layout_height="match_parent">
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@id/containerNoteList"
+        android:id="@id/containerMain"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:name="com.example.gu1919_lesson11.NoteListFragment"
         tools:layout="@layout/fragment_note_list">
 
     </androidx.fragment.app.FragmentContainerView>
@@ -19,7 +18,6 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:name="com.example.gu1919_lesson11.NoteFragment"
         tools:layout="@layout/fragment_note">
 
     </androidx.fragment.app.FragmentContainerView>
