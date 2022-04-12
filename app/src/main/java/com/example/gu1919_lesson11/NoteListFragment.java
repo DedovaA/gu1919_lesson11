@@ -6,6 +6,10 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,7 +27,7 @@ public class NoteListFragment extends Fragment {
     private RecyclerView recyclerViewNoteList;
     private List<Note> notes = new ArrayList<>();
     private NotesAdapter adapter;
-    private NotesDatabase database;
+    private MainViewModel viewModel;
 
     public static NoteListFragment newInstance() {
         return new NoteListFragment();
@@ -39,8 +43,7 @@ public class NoteListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        database = NotesDatabase.getInstance(requireContext());
-
+        viewModel = new MainViewModel(requireActivity().getApplication());
         view.findViewById(R.id.btnAddNote).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -57,7 +60,7 @@ public class NoteListFragment extends Fragment {
         adapter.setOnNoteClickListener(new NotesAdapter.onNoteClickListener() {
             @Override
             public void onNoteClick(int position) {
-//                openNote(position);
+                openNote(position);
             }
 
             @Override
@@ -82,25 +85,28 @@ public class NoteListFragment extends Fragment {
     }
 
     private void remove(int position){
-        Note note = notes.get(position);
-        database.notesDao().deleteNote(note);
-        getData();
-        adapter.notifyDataSetChanged();
+        Note note = adapter.getNotes().get(position);
+        viewModel.deleteNote(note);
     }
 
-//    private void openNote(int position){
-//        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
-//            requireActivity().getSupportFragmentManager().beginTransaction().add(R.id.containerNote,
-//                    NoteFragment.newInstance(notes.get(position))).commit();
-//        else
-//            requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.containerMain,
-//                    NoteFragment.newInstance(notes.get(position))).addToBackStack("").commit();
-//    }
+    private void openNote(int position){
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
+            requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.containerNote,
+                    NoteFragment.newInstance(adapter.getNotes().get(position))).commit();
+        else
+            requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.containerMain,
+                    NoteFragment.newInstance(adapter.getNotes().get(position))).addToBackStack("").commit();
+    }
 
     private void getData() {
-        List<Note> notesFromDB = database.notesDao().getAllNotes();
-        notes.clear();
-        notes.addAll(notesFromDB);
+        LiveData<List<Note>> notesFromDB = viewModel.getNotes();
+        notesFromDB.observe((LifecycleOwner) requireContext(), new Observer<List<Note>>() {
+            @Override
+            public void onChanged(List<Note> notesFromLiveData) {
+                adapter.setNotes(notesFromLiveData);
+            }
+        });
+
     }
 
 }

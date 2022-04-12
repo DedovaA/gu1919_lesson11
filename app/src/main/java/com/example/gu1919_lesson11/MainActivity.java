@@ -23,8 +23,6 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().add(R.id.containerMain, NoteListFragment.newInstance()).commit();
 //            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
 //                getSupportFragmentManager().beginTransaction().add(R.id.containerNote, new NoteFragment()).addToBackStack("").commit();
-        } else {
-
         }
     }
 

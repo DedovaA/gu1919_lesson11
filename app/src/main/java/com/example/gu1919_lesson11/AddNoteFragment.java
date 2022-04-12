@@ -22,8 +22,8 @@ public class AddNoteFragment extends Fragment {
     private EditText editTextDescription;
     private Spinner spinnerDayOfWeek;
     private RadioGroup radioGroupPriority;
+    private MainViewModel viewModel;
 
-    private NotesDatabase database;
 
     public static AddNoteFragment newInstance() {
         return new AddNoteFragment();
@@ -39,7 +39,7 @@ public class AddNoteFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        database = NotesDatabase.getInstance(requireContext());
+        viewModel = new MainViewModel(requireActivity().getApplication());
 
         editTextTitle = view.findViewById(R.id.et_title);
         editTextDescription = view.findViewById(R.id.et_description);
@@ -57,7 +57,7 @@ public class AddNoteFragment extends Fragment {
                 int priority = Integer.parseInt(radioButton.getText().toString());
                 if (isFilled(title, description)){
                     Note note = new Note(title, description, dayOfWeek, priority);
-                    database.notesDao().insertNote(note);
+                    viewModel.insertNote(note);
                     requireActivity().onBackPressed();
                 } else {
                     Toast.makeText(requireContext(),

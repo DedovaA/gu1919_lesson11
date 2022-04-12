@@ -18,13 +18,13 @@ public class NoteFragment extends Fragment {
 
     public NoteFragment() {}
 
-//    public static NoteFragment newInstance(Note note) {
-//        Bundle args = new Bundle();
-//        args.putParcelable("NOTE", note);
-//        NoteFragment fragment = new NoteFragment();
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
+    public static NoteFragment newInstance(Note note) {
+        Bundle args = new Bundle();
+        args.putParcelable("NOTE", note);
+        NoteFragment fragment = new NoteFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
 
     @Override
